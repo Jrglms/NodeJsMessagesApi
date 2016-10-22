@@ -5,6 +5,7 @@
     serverLogWriter.init = function () {
 
         var consoleLogWritter = require("common/logWriters/consoleLogWriter");
+        consoleLogWritter.init();
 
         logWritter = consoleLogWritter;
     };
