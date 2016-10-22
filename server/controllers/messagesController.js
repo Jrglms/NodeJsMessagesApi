@@ -7,12 +7,24 @@
 
         app.get("/messages/:category", function (req, res) {
 
-            var category = req.params.category;
+            var category = req.params.category.toLowerCase();
 
-            logWriter.write("debug", "Getting messages with category: " + category + "...");
+            logWriter.write("debug", "Getting messages with category '" + category + "'...");
 
-            var messages = manager.getGlobalMessages();
-
+            switch (category) {
+                case "global":
+                    var messages = manager.getGlobalMessages();
+                    break;
+                case "group":
+                case "private":
+                    break;
+                default:
+                    var errorMessage = "Category '" + category + "' not supported";
+                    logWriter.write("warning", errorMessage);
+                    res.send(errorMessage);
+                    return;
+            }
+            
             res.send(messages);
         });
 
