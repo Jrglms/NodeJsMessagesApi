@@ -1,0 +1,9 @@
+{
+  "name": "common",
+  "version": "0.0.0",
+  "description": "common",
+  "main": "app.js",
+  "author": {
+    "name": "nomax"
+  }
+}
