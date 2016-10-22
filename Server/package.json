@@ -4,8 +4,11 @@
   "description": "Server",
   "main": "server.js",
   "author": {
-	"name": "Jorge Lomas",
-	"email": "jorge.lomas.rodriguez@gmail.com",
-	"url": "https://github.com/Jrglms/NodeJsMessagesApi"
+    "name": "Jorge Lomas",
+    "email": "jorge.lomas.rodriguez@gmail.com",
+    "url": "https://github.com/Jrglms/NodeJsMessagesApi"
+  },
+  "dependencies": {
+    "express": "^4.14.0"
   }
 }
