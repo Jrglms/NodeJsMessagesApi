@@ -16,7 +16,10 @@
                     var messages = manager.getGlobalMessages();
                     break;
                 case "group":
+                    var messages = manager.getGroupMessages();
+                    break;
                 case "private":
+                    var messages = manager.getPrivateMessages();
                     break;
                 default:
                     var errorMessage = "Category '" + category + "' not supported";
