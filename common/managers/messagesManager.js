@@ -7,8 +7,9 @@
         _logWriter = logWriter;
     }
 
+    messagesManager.getGlobalMessages = function () {
 
-        _logWriter.write("verbose", "Getting global conversations");
+        _logWriter.write("debug", "Getting global messages...");
     };
 
 })(module.exports)

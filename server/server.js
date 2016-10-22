@@ -12,7 +12,7 @@ var logWriter = require("./logWriters/serverLogWriter");
 logWriter.init();
 
 // Routing
-controllers.init(app);
+controllers.init(app, logWriter);
 
 // Initialize server
 var server = http.createServer(app);

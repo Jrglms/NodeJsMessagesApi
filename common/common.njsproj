@@ -32,11 +32,13 @@
   <ItemGroup>
     <Compile Include="app.js" />
     <Compile Include="logWriters\consoleLogWriter.js" />
+    <Compile Include="managers\messagesManager.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="logWriters\" />
+    <Folder Include="managers\" />
     <Folder Include="typings\" />
     <Folder Include="typings\globals\" />
     <Folder Include="typings\globals\node\" />

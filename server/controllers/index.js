@@ -2,8 +2,9 @@
 
     var messagesController = require("./messagesController");
 
-    controllers.init = function (app) {
-        messagesController.init(app);
+    controllers.init = function (app, logWriter) {
+        
+        messagesController.init(app, logWriter);
     };
 
 })(module.exports);
