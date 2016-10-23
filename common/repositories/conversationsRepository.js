@@ -20,4 +20,16 @@
         });
     };
 
+    conversationsRepository.findOneAndUpdate = function (query, projection, options, next) {
+
+        _database.getDb(function (err, db) {
+            if (err) {
+                next(err, null);
+            }
+            else {
+                db.conversations.findOneAndUpdate(query, projection, options, next);
+            }
+        });
+    };
+
 })(module.exports)
