@@ -34,6 +34,7 @@
     <Compile Include="controllers\authenticationController.js" />
     <Compile Include="controllers\index.js" />
     <Compile Include="controllers\messagesController.js" />
+    <Compile Include="controllers\validators\messagesControllerValidator.js" />
     <Compile Include="logWriters\serverLogWriter.js" />
     <Compile Include="server.js" />
     <Content Include="package.json" />
@@ -41,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="controllers\" />
+    <Folder Include="controllers\validators\" />
     <Folder Include="logWriters\" />
     <Folder Include="typings\" />
     <Folder Include="typings\globals\" />

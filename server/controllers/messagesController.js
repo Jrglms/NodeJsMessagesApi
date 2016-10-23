@@ -3,25 +3,12 @@
     messagesController.init = function (app, logWriter) {
 
         var manager = require("common/managers/messagesManager");
-        var is = require("common/helpers/is");
         manager.init(logWriter)
 
-        app.get("/groups/:groupId/messages", function (req, res, next) {
+        var validator = require("./validators/messagesControllerValidator");
+        validator.init(app, logWriter);
 
-            logWriter.write("debug", "Validating input...");
-
-            if (is.integer(req.params.groupId)) {
-
-                logWriter.write("debug", "Valid input.");
-
-                next();
-                return;
-            }
-            logWriter.write("debug", "Invalid input. Returning 422 UnprocessableEntity.")
-
-            res.status(422).send("GroupId must be an integer.");
-
-            }, function (req, res) {
+        app.get("/groups/:groupId/messages", function (req, res) {
 
             var groupId = req.params.groupId.toLowerCase();
 
@@ -32,22 +19,7 @@
             res.send(messages);
         });
 
-        app.get("/users/:userId/messages", function (req, res, next) {
-
-            logWriter.write("debug", "Validating input...");
-
-            if (is.integer(req.params.userId)) {
-
-                logWriter.write("debug", "Valid input.");
-
-                next();
-                return;
-            }
-            logWriter.write("debug", "Invalid input. Returning 422 UnprocessableEntity.")
-
-            res.status(422).send("UserId must be an integer.");
-
-        }, function (req, res) {
+        app.get("/users/:userId/messages", function (req, res) {
 
             var requestingUserId = 0; // Get from header
             var userId = req.params.userId.toLowerCase();
