@@ -23,7 +23,7 @@
 
     messagesManager.getPrivateMessages = function (requestingUserId, userId) {
 
-        _logWriter.write("debug", "Getting private messages between users with Ids '" + requestingUserId + "' and ' " + userId + "'...");
+        _logWriter.write("debug", "Getting private messages between users with Ids '" + requestingUserId + "' and '" + userId + "'...");
 
         _logWriter.write("debug", "Not implemented yet.")
     };

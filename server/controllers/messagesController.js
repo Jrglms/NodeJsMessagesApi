@@ -21,7 +21,7 @@
 
         app.get("/users/:userId/messages", function (req, res) {
 
-            var requestingUserId = 0; // Get from header
+            var requestingUserId = req.headers["user-identifier"];
             var userId = req.params.userId.toLowerCase();
 
             logWriter.write("debug", "Getting private messages between users with Ids '" + requestingUserId + "' and '" + userId + "'...");

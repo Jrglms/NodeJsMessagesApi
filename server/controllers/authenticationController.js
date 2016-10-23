@@ -6,9 +6,28 @@
 
             logWriter.write("debug", "Authenticating user...");
 
-            logWriter.write("debug", "Work in progress. No authentication is required yet.");
+            var userId = req.headers["user-identifier"];
 
-            next();
+            if (userId) {
+
+                var is = require("common/helpers/is");
+
+                if (is.integer(userId)) {
+                    logWriter.write("debug", "Request made by user with Id '" + userId + "'.");
+
+                    next();
+                }
+                else {
+                    logWriter.write("debug", "Invalid User-identifier provided.");
+
+                    res.status(404).send("User-identifier header should be an integer.");
+                }
+            }
+            else {
+                logWriter.write("debug", "User-identifier was not provided.");
+
+                res.status(404).send("User-identifier header should be provided.");
+            }
         })
 
     }
