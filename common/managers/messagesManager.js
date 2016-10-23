@@ -8,6 +8,21 @@
         _logWriter = logWriter;
     }
 
+    messagesManager.addGlobalMessage = function (userId, message, next) {
+
+        _logWriter.write("debug", "Adding global message...");
+
+        _conversationsRepository.findOneAndUpdate({ category: 1 }, { $push: { messages: { message: message, userId: userId } } }, { upsert: true }, function (err) {
+            if (err) {
+                _logWriter.write("error", "Could not add new message. Error:\n" + "\t" + err);
+                next(err);
+            }
+            else {
+                next(null);
+            }
+        });
+    }
+
     messagesManager.getGlobalMessages = function (next) {
 
         _logWriter.write("debug", "Getting global messages...");
@@ -24,7 +39,7 @@
                         break;
                     case 1:
                         _logWriter.write("debug", "The collection was found. Returning the associated messages.");
-                        next(null, results.messages);
+                        next(null, results[0].messages);
                         break;
                     default:
                         var errorMessage = "More than a collection of global messages was returned.";

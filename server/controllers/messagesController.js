@@ -32,9 +32,9 @@
         });
 
         app.get("/messages", function (req, res) {
-            
+
             logWriter.write("debug", "Getting global messages...");
-            
+
             manager.getGlobalMessages(function (err, messages) {
                 if (err) {
                     logWriter.write("error", "Could not get global messages. Error:\n" + "\t" + err);
@@ -44,6 +44,26 @@
                     logWriter.write("debug", "Sending messages back...");
 
                     res.send(messages);
+                }
+            });
+        });
+
+        app.post("/messages", function (req, res) {
+
+            var requestingUserId = req.headers["user-identifier"];
+            var message = req.body.message;
+
+            logWriter.write("debug", "Adding a new global message...");
+
+            manager.addGlobalMessage(requestingUserId, message, function (err) {
+                if (err) {
+                    logWriter.write("error", "Could not add global message. Error:\n" + "\t" + err);
+
+                    res.status(500).send("Could not add global message.");
+                } else {
+                    logWriter.write("debug", "Global message added.");
+
+                    res.sendStatus(201);
                 }
             });
         });
