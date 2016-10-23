@@ -5,15 +5,6 @@
         var manager = require("common/managers/messagesManager");
         manager.init(logWriter)
 
-        app.get("*", function (req, res, next) {
-
-            logWriter.write("debug", "Authenticating user...");
-
-            logWriter.write("debug", "Work in progress. No authentication is required yet.");
-
-            next();
-        })
-
         app.get("/groups/:groupId/messages", function (req, res) {
 
             var groupId = req.params.groupId.toLowerCase();

@@ -31,6 +31,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="controllers\authenticationController.js" />
     <Compile Include="controllers\index.js" />
     <Compile Include="controllers\messagesController.js" />
     <Compile Include="logWriters\serverLogWriter.js" />
