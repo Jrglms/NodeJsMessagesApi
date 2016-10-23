@@ -1,7 +1,7 @@
 ﻿(function (messagesManager) {
 
     var _logWriter = null;
-    var _messagesRepository = require("../repositories/messagesRepository")
+    var _conversationsRepository = require("../repositories/conversationsRepository")
 
     messagesManager.init = function (logWriter) {
 
@@ -12,12 +12,26 @@
 
         _logWriter.write("debug", "Getting global messages...");
 
-        _messagesRepository.list(function (err, results) {
+        _conversationsRepository.list({ category: 1 }, { messages: true }, function (err, results) {
             if (err) {
                 _logWriter.write("error", "Failed to get global messages.\n" + "Error message:\n" + "\t" + err);
                 next(err, null);
             } else {
-                next(null, results);
+                switch (results.length) {
+                    case 0:
+                        _logWriter.write("debug", "No collection was found. Returning empty array.");
+                        next(null, []);
+                        break;
+                    case 1:
+                        _logWriter.write("debug", "The collection was found. Returning the associated messages.");
+                        next(null, results.messages);
+                        break;
+                    default:
+                        var errorMessage = "More than a collection of global messages was returned.";
+                        _logWriter.write("error", errorMessage);
+                        next(errorMessage, null);
+                        break;
+                }
             }
         });
     };
