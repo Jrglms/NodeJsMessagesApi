@@ -3,6 +3,8 @@ var port = 3000;
 
 // Initialize required modules
 var app = require("express")();
+var bodyParser = require("body-parser");
+app.use(bodyParser.json());
 
 // Logging
 var logWriter = require("./logWriters/serverLogWriter");
