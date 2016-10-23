@@ -13,6 +13,12 @@ logWriter.init();
 
 // Routing
 controllers.init(app, logWriter);
+app.all("*", function (req, res) {
+
+    logWriter.write("debug", "User tried to reach a page that does not exist. Returning 404 NotFound.");
+
+    res.sendStatus(404);
+})
 
 // Initialize server
 var server = http.createServer(app);
