@@ -1,5 +1,5 @@
 ﻿(function (database) {
-
+    
     var mongoDb = require("mongodb");
     var mongoUrl = "mongodb://localhost:27017/MessagesApi";
     var db = null;
@@ -11,7 +11,10 @@
                 if (err) {
                     next(err, null);
                 } else {
-                    db = createdDb;
+                    db = {
+                        db: createdDb,
+                        conversations: createdDb.collection("Conversations")
+                    };
                     next(null, db);
                 }
             });

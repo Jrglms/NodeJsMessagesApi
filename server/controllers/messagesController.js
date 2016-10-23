@@ -35,9 +35,17 @@
             
             logWriter.write("debug", "Getting global messages...");
             
-            var messages = manager.getGlobalMessages();
+            manager.getGlobalMessages(function (err, messages) {
+                if (err) {
+                    logWriter.write("error", "Could not get global messages. Error:\n" + "\t" + err);
 
-            res.send(messages);
+                    res.status(500).send("Could not get global messages.");
+                } else {
+                    logWriter.write("debug", "Sending messages back...");
+
+                    res.send(messages);
+                }
+            });
         });
 
     }

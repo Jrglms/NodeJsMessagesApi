@@ -1,17 +1,25 @@
 ﻿(function (messagesManager) {
 
     var _logWriter = null;
+    var _messagesRepository = require("../repositories/messagesRepository")
 
     messagesManager.init = function (logWriter) {
 
         _logWriter = logWriter;
     }
 
-    messagesManager.getGlobalMessages = function () {
+    messagesManager.getGlobalMessages = function (next) {
 
         _logWriter.write("debug", "Getting global messages...");
 
-        _logWriter.write("debug", "Not implemented yet.")
+        _messagesRepository.list(function (err, results) {
+            if (err) {
+                _logWriter.write("error", "Failed to get global messages.\n" + "Error message:\n" + "\t" + err);
+                next(err, null);
+            } else {
+                next(null, results);
+            }
+        });
     };
 
     messagesManager.getGroupMessages = function (groupId) {
