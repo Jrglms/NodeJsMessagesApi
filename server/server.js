@@ -2,24 +2,15 @@
 var port = 3000;
 
 // Initialize required modules
-var http = require("http");
-var express = require("express");
-var app = express();
-var controllers = require("./controllers")
+var app = require("express")();
 
 // Logging
 var logWriter = require("./logWriters/serverLogWriter");
 logWriter.init();
 
 // Routing
-controllers.init(app, logWriter);
-app.all("*", function (req, res) {
-
-    logWriter.write("debug", "User tried to reach a page that does not exist. Returning 404 NotFound.");
-
-    res.sendStatus(404);
-})
+require("./controllers").init(app, logWriter);
 
 // Initialize server
-var server = http.createServer(app);
+var server = require("http").createServer(app);
 server.listen(port);

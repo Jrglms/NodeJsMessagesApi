@@ -4,6 +4,8 @@
   "description": "common",
   "main": "app.js",
   "author": {
-    "name": "nomax"
+    "name": "Jorge Lomas",
+    "email": "jorge.lomas.rodriguez@gmail.com",
+    "url": "https://github.com/Jrglms/NodeJsMessagesApi"
   }
 }

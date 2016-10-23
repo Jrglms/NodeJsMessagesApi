@@ -10,7 +10,7 @@
 
         app.get("/groups/:groupId/messages", function (req, res) {
 
-            var groupId = req.params.groupId.toLowerCase();
+            var groupId = req.params.groupId;
 
             logWriter.write("debug", "Getting group messages for group with Id '" + groupId + "'...");
             
@@ -22,7 +22,7 @@
         app.get("/users/:userId/messages", function (req, res) {
 
             var requestingUserId = req.headers["user-identifier"];
-            var userId = req.params.userId.toLowerCase();
+            var userId = req.params.userId;
 
             logWriter.write("debug", "Getting private messages between users with Ids '" + requestingUserId + "' and '" + userId + "'...");
             
