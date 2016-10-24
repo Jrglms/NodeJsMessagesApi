@@ -1,10 +1,10 @@
 ﻿(function (conversationsRepository) {
-
-    var _database = require("../data/database");
+    
+    var _appConfig = require("../appConfig");
 
     conversationsRepository.list = function (query, projection, next) {
 
-        _database.getDb(function (err, db) {
+        _appConfig.getDatabase(function (err, db) {
             if (err) {
                 next(err, null);
             }
@@ -22,7 +22,7 @@
 
     conversationsRepository.findOneAndUpdate = function (query, projection, options, next) {
 
-        _database.getDb(function (err, db) {
+        _appConfig.getDatabase(function (err, db) {
             if (err) {
                 next(err, null);
             }
