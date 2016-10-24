@@ -1,9 +1,9 @@
 ﻿(function (controllers) {
 
-    var _logWriter = require("../appConfig").logWriter;
-
     controllers.init = function (app) {
-        
+
+        var logWriter = require("../appConfig").logWriter;
+
         var authenticationController = require("./authenticationController");
         var messagesController = require("./messagesController");
         
@@ -13,7 +13,7 @@
         // If request did not match any route, send back a 404
         app.all("*", function (req, res) {
 
-            _logWriter.write("debug", "User tried to reach a page that does not exist. Returning 404 NotFound.");
+            logWriter.write("debug", "User tried to reach a page that does not exist. Returning 404 NotFound.");
 
             res.sendStatus(404);
         })
