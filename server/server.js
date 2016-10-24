@@ -1,15 +1,13 @@
-﻿// Constants
-var port = 3000;
-
-// Initialize required modules
+﻿// Initialize required modules
 var app = require("express")();
 var bodyParser = require("body-parser");
 app.use(bodyParser.json());
+var appConfig = require("./appConfig");
 
 // Logging
 var logWriter = require("./logWriters/serverLogWriter");
 logWriter.init();
-require("./appConfig").logWriter = logWriter;
+appConfig.logWriter = logWriter;
 
 // Initialize common project
 require("common")(logWriter);
@@ -19,4 +17,4 @@ require("./controllers").init(app);
 
 // Initialize server
 var server = require("http").createServer(app);
-server.listen(port);
+server.listen(appConfig.port);
