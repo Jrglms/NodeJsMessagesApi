@@ -14,9 +14,17 @@
 
             logWriter.write("debug", "Getting group messages for group with Id '" + groupId + "'...");
             
-            var messages = manager.getGroupMessages(groupId);
+            var messages = manager.getGroupMessages(groupId, function (err, messages) {
+                if (err) {
+                    logWriter.write("error", "Could not get group messages. Error:\n" + "\t" + err);
 
-            res.send(messages);
+                    res.status(500).send("Could not get group messages.");
+                } else {
+                    logWriter.write("debug", "Sending messages back...");
+
+                    res.send(messages);
+                }
+            });
         });
 
         app.get("/users/:userId/messages", function (req, res) {
@@ -62,6 +70,27 @@
                     res.status(500).send("Could not add global message.");
                 } else {
                     logWriter.write("debug", "Global message added.");
+
+                    res.sendStatus(201);
+                }
+            });
+        });
+
+        app.post("/groups/:groupId/messages", function (req, res) {
+
+            var requestingUserId = req.headers["user-identifier"];
+            var groupId = req.params.groupId;
+            var message = req.body.message;
+
+            logWriter.write("debug", "Adding a new group message...");
+
+            manager.addGroupMessage(requestingUserId, groupId, message, function (err) {
+                if (err) {
+                    logWriter.write("error", "Could not add group message. Error:\n" + "\t" + err);
+
+                    res.status(500).send("Could not add group message.");
+                } else {
+                    logWriter.write("debug", "Group message added.");
 
                     res.sendStatus(201);
                 }
