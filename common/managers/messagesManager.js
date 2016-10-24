@@ -50,8 +50,10 @@
 
         _logWriter.write("debug", "Adding a new private message...");
 
+        var integerSort = require("../helpers/integerSort");
+
         _conversationsRepository.findOneAndUpdate(
-            { userIds: [senderUserId, receiverUserId].sort(function (a, b) { return a - b; }) }, // Query
+            { userIds: [senderUserId, receiverUserId].sort(integerSort.asc) }, // Query
             { $push: { messages: { message: message, userId: senderUserId } } }, // Projection
             { upsert: true }, // Options
             function (err) {
@@ -131,8 +133,10 @@
 
         _logWriter.write("debug", "Getting private messages between users with Ids '" + requestingUserId + "' and '" + userId + "'...");
 
+        var integerSort = require("../helpers/integerSort");
+
         _conversationsRepository.list(
-            { userIds: [requestingUserId, userId].sort(function (a, b) { return a - b; }) }, // Query
+            { userIds: [requestingUserId, userId].sort(integerSort.asc) }, // Query
             { messages: true }, // Projection
             function (err, results) {
                 if (err) {
