@@ -9,9 +9,13 @@ app.use(bodyParser.json());
 // Logging
 var logWriter = require("./logWriters/serverLogWriter");
 logWriter.init();
+require("./appConfig").logWriter = logWriter;
+
+// Initialize common project
+require("common")(logWriter);
 
 // Routing
-require("./controllers").init(app, logWriter);
+require("./controllers").init(app);
 
 // Initialize server
 var server = require("http").createServer(app);

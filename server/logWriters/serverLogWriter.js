@@ -1,18 +1,18 @@
 ﻿(function (serverLogWriter) {
     
-    var logWritter = null;
+    var _logWriter = null;
 
     serverLogWriter.init = function () {
 
         var consoleLogWritter = require("common/logWriters/consoleLogWriter");
         consoleLogWritter.init();
 
-        logWritter = consoleLogWritter;
+        _logWriter = consoleLogWritter;
     };
 
     serverLogWriter.write = function (category, message) {
 
-        logWritter.write(category, message);
+        _logWriter.write(category, message);
     };
 
 })(module.exports);

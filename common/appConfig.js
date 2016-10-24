@@ -24,5 +24,7 @@
             });
         }
     };
+
+    appConfig.logWriter = null;
     
 })(module.exports)

@@ -1,13 +1,8 @@
 ﻿(function (messagesManager) {
 
-    var _logWriter = null;
-    var _conversationsRepository = require("../repositories/conversationsRepository")
-
-    messagesManager.init = function (logWriter) {
-
-        _logWriter = logWriter;
-    }
-
+    var _logWriter = require("../appConfig").logWriter;
+    var _conversationsRepository = require("../repositories/conversationsRepository");
+    
     var handleAddMessageResponse = function (err, next) {
         if (err) {
             _logWriter.write("error", "Could not add new message. Error:\n" + "\t" + err);
