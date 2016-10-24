@@ -8,6 +8,39 @@
         _logWriter = logWriter;
     }
 
+    var handleAddMessageResponse = function (err, next) {
+        if (err) {
+            _logWriter.write("error", "Could not add new message. Error:\n" + "\t" + err);
+            next(err);
+        }
+        else {
+            next(null);
+        }
+    }
+
+    var handleGetMessagesResponse = function (err, results, next) {
+        if (err) {
+            _logWriter.write("error", "Failed to get messages. Error message:\n" + "\t" + err);
+            next(err, null);
+        } else {
+            switch (results.length) {
+                case 0:
+                    _logWriter.write("debug", "No collection was found. Returning empty array.");
+                    next(null, []);
+                    break;
+                case 1:
+                    _logWriter.write("debug", "Collection found. Returning the associated messages.");
+                    next(null, results[0].messages);
+                    break;
+                default:
+                    var errorMessage = "More than a collection messages was returned. Only one was expected.";
+                    _logWriter.write("error", errorMessage);
+                    next(errorMessage, null);
+                    break;
+            }
+        }
+    }
+
     messagesManager.addGlobalMessage = function (userId, message, next) {
 
         _logWriter.write("debug", "Adding global message...");
@@ -17,13 +50,7 @@
             { $push: { messages: { message: message, userId: userId } } }, // Projection
             { upsert: true }, // Options
             function (err) {
-                if (err) {
-                    _logWriter.write("error", "Could not add new message. Error:\n" + "\t" + err);
-                    next(err);
-                }
-                else {
-                    next(null);
-                }
+                handleAddMessageResponse(err, next);
             });
     }
 
@@ -36,13 +63,7 @@
             { $push: { messages: { message: message, userId: userId } } }, // Projection
             { upsert: true }, // Options
             function (err) {
-                if (err) {
-                    _logWriter.write("error", "Could not add new message. Error:\n" + "\t" + err);
-                    next(err);
-                }
-                else {
-                    next(null);
-                }
+                handleAddMessageResponse(err, next);
             });
     }
 
@@ -57,13 +78,7 @@
             { $push: { messages: { message: message, userId: senderUserId } } }, // Projection
             { upsert: true }, // Options
             function (err) {
-                if (err) {
-                    _logWriter.write("error", "Could not add new message. Error:\n" + "\t" + err);
-                    next(err);
-                }
-                else {
-                    next(null);
-                }
+                handleAddMessageResponse(err, next);
             });
     }
 
@@ -75,26 +90,7 @@
             { userIds: { $exists: false }, groupId: { $exists: false } }, // Query
             { messages: true }, // Projection
             function (err, results) {
-                if (err) {
-                    _logWriter.write("error", "Failed to get global messages.\n" + "Error message:\n" + "\t" + err);
-                    next(err, null);
-                } else {
-                    switch (results.length) {
-                        case 0:
-                            _logWriter.write("debug", "No collection was found. Returning empty array.");
-                            next(null, []);
-                            break;
-                        case 1:
-                            _logWriter.write("debug", "The collection was found. Returning the associated messages.");
-                            next(null, results[0].messages);
-                            break;
-                        default:
-                            var errorMessage = "More than a collection of global messages was returned.";
-                            _logWriter.write("error", errorMessage);
-                            next(errorMessage, null);
-                            break;
-                    }
-                }
+                handleGetMessagesResponse(err, results, next);
             });
     };
 
@@ -106,26 +102,7 @@
             { groupId: groupId }, // Query
             { messages: true }, // Projection
             function (err, results) {
-                if (err) {
-                    _logWriter.write("error", "Failed to get group messages.\n" + "Error message:\n" + "\t" + err);
-                    next(err, null);
-                } else {
-                    switch (results.length) {
-                        case 0:
-                            _logWriter.write("debug", "No collection was found. Returning empty array.");
-                            next(null, []);
-                            break;
-                        case 1:
-                            _logWriter.write("debug", "The collection was found. Returning the associated messages.");
-                            next(null, results[0].messages);
-                            break;
-                        default:
-                            var errorMessage = "More than a collection of group messages was returned.";
-                            _logWriter.write("error", errorMessage);
-                            next(errorMessage, null);
-                            break;
-                    }
-                }
+                handleGetMessagesResponse(err, results, next);
             });
     };
 
@@ -139,26 +116,7 @@
             { userIds: [requestingUserId, userId].sort(integerSort.asc) }, // Query
             { messages: true }, // Projection
             function (err, results) {
-                if (err) {
-                    _logWriter.write("error", "Failed to get private messages.\n" + "Error message:\n" + "\t" + err);
-                    next(err, null);
-                } else {
-                    switch (results.length) {
-                        case 0:
-                            _logWriter.write("debug", "No collection was found. Returning empty array.");
-                            next(null, []);
-                            break;
-                        case 1:
-                            _logWriter.write("debug", "The collection was found. Returning the associated messages.");
-                            next(null, results[0].messages);
-                            break;
-                        default:
-                            var errorMessage = "More than a collection of private messages was returned.";
-                            _logWriter.write("error", errorMessage);
-                            next(errorMessage, null);
-                            break;
-                    }
-                }
+                handleGetMessagesResponse(err, results, next);
             });
     };
 
