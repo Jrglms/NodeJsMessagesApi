@@ -34,9 +34,17 @@
 
             logWriter.write("debug", "Getting private messages between users with Ids '" + requestingUserId + "' and '" + userId + "'...");
             
-            var messages = manager.getPrivateMessages(requestingUserId, userId);
+            var messages = manager.getPrivateMessages(requestingUserId, userId, function (err, messages) {
+                if (err) {
+                    logWriter.write("error", "Could not get private messages. Error:\n" + "\t" + err);
 
-            res.send(messages);
+                    res.status(500).send("Could not get private messages.");
+                } else {
+                    logWriter.write("debug", "Sending messages back...");
+
+                    res.send(messages);
+                }
+            });
         });
 
         app.get("/messages", function (req, res) {
@@ -91,6 +99,27 @@
                     res.status(500).send("Could not add group message.");
                 } else {
                     logWriter.write("debug", "Group message added.");
+
+                    res.sendStatus(201);
+                }
+            });
+        });
+
+        app.post("/users/:userId/messages", function (req, res) {
+
+            var requestingUserId = req.headers["user-identifier"];
+            var userId = req.params.userId;
+            var message = req.body.message;
+
+            logWriter.write("debug", "Adding private message between users with Ids '" + requestingUserId + "' and '" + userId + "'...");
+
+            manager.addPrivateMessage(requestingUserId, userId, message, function (err) {
+                if (err) {
+                    logWriter.write("error", "Could not add Private message. Error:\n" + "\t" + err);
+
+                    res.status(500).send("Could not add private message.");
+                } else {
+                    logWriter.write("debug", "Private message added.");
 
                     res.sendStatus(201);
                 }
