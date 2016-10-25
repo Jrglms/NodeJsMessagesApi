@@ -36,33 +36,33 @@
         }
     }
 
-    messagesManager.addGlobalMessage = function (userId, message, next) {
+    messagesManager.addGlobalMessage = function (userId, message, userIp, date, next) {
 
         _logWriter.write("debug", "Adding global message...");
 
         _conversationsRepository.findOneAndUpdate(
             { userIds: { $exists: false }, groupId: { $exists: false } }, // Query
-            { $push: { messages: { message: message, userId: userId } } }, // Projection
+            { $push: { messages: { message: message, userId: userId, userIp: userIp, date: date } } }, // Projection
             { upsert: true }, // Options
             function (err) {
                 handleAddMessageResponse(err, next);
             });
     }
 
-    messagesManager.addGroupMessage = function (userId, groupId, message, next) {
+    messagesManager.addGroupMessage = function (userId, groupId, message, userIp, date, next) {
 
         _logWriter.write("debug", "Adding a new group message...");
 
         _conversationsRepository.findOneAndUpdate(
             { groupId: groupId }, // Query
-            { $push: { messages: { message: message, userId: userId } } }, // Projection
+            { $push: { messages: { message: message, userId: userId, userIp: userIp, date: date } } }, // Projection
             { upsert: true }, // Options
             function (err) {
                 handleAddMessageResponse(err, next);
             });
     }
 
-    messagesManager.addPrivateMessage = function (senderUserId, receiverUserId, message, next) {
+    messagesManager.addPrivateMessage = function (senderUserId, receiverUserId, message, userIp, date, next) {
 
         _logWriter.write("debug", "Adding a new private message...");
 
@@ -70,7 +70,7 @@
 
         _conversationsRepository.findOneAndUpdate(
             { userIds: [senderUserId, receiverUserId].sort(integerSort.asc) }, // Query
-            { $push: { messages: { message: message, userId: senderUserId } } }, // Projection
+            { $push: { messages: { message: message, userId: senderUserId, userIp: userIp, date: date } } }, // Projection
             { upsert: true }, // Options
             function (err) {
                 handleAddMessageResponse(err, next);

@@ -69,10 +69,12 @@
 
             var requestingUserId = req.headers["user-identifier"];
             var message = req.body.message;
+            var clientIp = req.ip;
+            var date = new Date().toUTCString();
 
             logWriter.write("debug", "Adding a new global message...");
 
-            manager.addGlobalMessage(requestingUserId, message, function (err) {
+            manager.addGlobalMessage(requestingUserId, message, clientIp, date, function (err) {
                 if (err) {
                     logWriter.write("error", "Could not add global message. Error:\n" + "\t" + err);
 
@@ -90,10 +92,12 @@
             var requestingUserId = req.headers["user-identifier"];
             var groupId = req.params.groupId;
             var message = req.body.message;
+            var clientIp = req.ip;
+            var date = new Date().toUTCString();
 
             logWriter.write("debug", "Adding a new group message...");
 
-            manager.addGroupMessage(requestingUserId, groupId, message, function (err) {
+            manager.addGroupMessage(requestingUserId, groupId, message, clientIp, date, function (err) {
                 if (err) {
                     logWriter.write("error", "Could not add group message. Error:\n" + "\t" + err);
 
@@ -111,10 +115,12 @@
             var requestingUserId = req.headers["user-identifier"];
             var userId = req.params.userId;
             var message = req.body.message;
+            var clientIp = req.ip;
+            var date = new Date().toUTCString();
 
             logWriter.write("debug", "Adding private message between users with Ids '" + requestingUserId + "' and '" + userId + "'...");
 
-            manager.addPrivateMessage(requestingUserId, userId, message, function (err) {
+            manager.addPrivateMessage(requestingUserId, userId, message, clientIp, date, function (err) {
                 if (err) {
                     logWriter.write("error", "Could not add Private message. Error:\n" + "\t" + err);
 
