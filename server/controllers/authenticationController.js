@@ -4,7 +4,7 @@
 
         var logWriter = require("../appConfig").logWriter;
 
-        app.get("*", function (req, res, next) {
+        app.all("*", function (req, res, next) {
 
             logWriter.write("debug", "Authenticating user...");
 

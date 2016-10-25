@@ -4,6 +4,14 @@
 
         var logWriter = require("../appConfig").logWriter;
 
+        // Adding a line before each requests to make things more readable
+        app.all("*", function (req, res, next) {
+
+            logWriter.write("verbose", "");
+
+            next();
+        })
+
         var authenticationController = require("./authenticationController");
         var messagesController = require("./messagesController");
         
