@@ -36,14 +36,37 @@
         }
     }
 
+    var getProjectionObjectForUpdate = function (message, userId, userIp, date) {
+
+        return { $push: { messages: { message: message, userId: userId, userIp: userIp, date: date } } };
+    }
+
+    var getProjectionObjectForGet = function (message, userId, userIp, date) {
+
+        return { messages: true };
+    }
+
+    var getOptionsObject = function () {
+
+        return { upsert: true }
+    }
+
+    var addDateFiltersToQueryObject = function (queryObject, dateFrom, dateTo) {
+
+        if (dateFrom)
+            queryObject.$and.push({ "messages.date": { $gte: dateFrom } });
+        if (dateTo)
+            queryObject.$and.push({ "messages.date": { $lte: dateTo } });
+    }
+
     messagesManager.addGlobalMessage = function (userId, message, userIp, date, next) {
 
         _logWriter.write("debug", "Adding global message...");
 
         _conversationsRepository.findOneAndUpdate(
             { userIds: { $exists: false }, groupId: { $exists: false } }, // Query
-            { $push: { messages: { message: message, userId: userId, userIp: userIp, date: date } } }, // Projection
-            { upsert: true }, // Options
+            getProjectionObjectForUpdate(message, userId, userIp, date),
+            getOptionsObject(),
             function (err) {
                 handleAddMessageResponse(err, next);
             });
@@ -55,8 +78,8 @@
 
         _conversationsRepository.findOneAndUpdate(
             { groupId: groupId }, // Query
-            { $push: { messages: { message: message, userId: userId, userIp: userIp, date: date } } }, // Projection
-            { upsert: true }, // Options
+            getProjectionObjectForUpdate(message, userId, userIp, date),
+            getOptionsObject(),
             function (err) {
                 handleAddMessageResponse(err, next);
             });
@@ -70,8 +93,8 @@
 
         _conversationsRepository.findOneAndUpdate(
             { userIds: [senderUserId, receiverUserId].sort(integerSort.asc) }, // Query
-            { $push: { messages: { message: message, userId: senderUserId, userIp: userIp, date: date } } }, // Projection
-            { upsert: true }, // Options
+            getProjectionObjectForUpdate(message, userId, userIp, date),
+            getOptionsObject(),
             function (err) {
                 handleAddMessageResponse(err, next);
             });
@@ -82,15 +105,12 @@
         _logWriter.write("debug", "Getting global messages...");
 
         var queryObject = { $and: [{ userIds: { $exists: false } }, { groupId: { $exists: false } }] };
-        
-        if (dateFrom)
-            queryObject.$and.push({ "messages.date": { $gte: dateFrom } });
-        if (dateTo)
-            queryObject.$and.push({ "messages.date": { $lte: dateTo } });
 
+        addDateFiltersToQueryObject(queryObject, dateFrom, dateTo);
+        
         _conversationsRepository.list(
-            queryObject, // Query
-            { messages: true }, // Projection
+            queryObject,
+            getProjectionObjectForGet(),
             function (err, results) {
                 handleGetMessagesResponse(err, results, next);
             });
@@ -102,14 +122,11 @@
 
         var queryObject = { $and: [{ groupId: groupId }] };
 
-        if (dateFrom)
-            queryObject.$and.push({ "messages.date": { $gte: dateFrom } });
-        if (dateTo)
-            queryObject.$and.push({ "messages.date": { $lte: dateTo } });
+        addDateFiltersToQueryObject(queryObject, dateFrom, dateTo);
 
         _conversationsRepository.list(
-            queryObject, // Query
-            { messages: true }, // Projection
+            queryObject,
+            getProjectionObjectForGet(),
             function (err, results) {
                 handleGetMessagesResponse(err, results, next);
             });
@@ -123,14 +140,11 @@
 
         var queryObject = { $and: [{ userIds: [requestingUserId, userId].sort(integerSort.asc) }] };
 
-        if (dateFrom)
-            queryObject.$and.push({ "messages.date": { $gte: dateFrom } });
-        if (dateTo)
-            queryObject.$and.push({ "messages.date": { $lte: dateTo } });
+        addDateFiltersToQueryObject(queryObject, dateFrom, dateTo);
 
         _conversationsRepository.list(
-            queryObject, // Query
-            { messages: true }, // Projection
+            queryObject,
+            getProjectionObjectForGet(),
             function (err, results) {
                 handleGetMessagesResponse(err, results, next);
             });
