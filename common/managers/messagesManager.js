@@ -77,38 +77,59 @@
             });
     }
 
-    messagesManager.getGlobalMessages = function (next) {
+    messagesManager.getGlobalMessages = function (dateFrom, dateTo, next) {
 
         _logWriter.write("debug", "Getting global messages...");
 
+        var queryObject = { $and: [{ userIds: { $exists: false } }, { groupId: { $exists: false } }] };
+        
+        if (dateFrom)
+            queryObject.$and.push({ "messages.date": { $gte: dateFrom } });
+        if (dateTo)
+            queryObject.$and.push({ "messages.date": { $lte: dateTo } });
+
         _conversationsRepository.list(
-            { userIds: { $exists: false }, groupId: { $exists: false } }, // Query
+            queryObject, // Query
             { messages: true }, // Projection
             function (err, results) {
                 handleGetMessagesResponse(err, results, next);
             });
     };
 
-    messagesManager.getGroupMessages = function (groupId, next) {
+    messagesManager.getGroupMessages = function (groupId, dateFrom, dateTo, next) {
 
         _logWriter.write("debug", "Getting group messages for group with Id '" + groupId + "'...");
-        
+
+        var queryObject = { $and: [{ groupId: groupId }] };
+
+        if (dateFrom)
+            queryObject.$and.push({ "messages.date": { $gte: dateFrom } });
+        if (dateTo)
+            queryObject.$and.push({ "messages.date": { $lte: dateTo } });
+
         _conversationsRepository.list(
-            { groupId: groupId }, // Query
+            queryObject, // Query
             { messages: true }, // Projection
             function (err, results) {
                 handleGetMessagesResponse(err, results, next);
             });
     };
 
-    messagesManager.getPrivateMessages = function (requestingUserId, userId, next) {
-
-        _logWriter.write("debug", "Getting private messages between users with Ids '" + requestingUserId + "' and '" + userId + "'...");
+    messagesManager.getPrivateMessages = function (requestingUserId, userId, dateFrom, dateTo, next) {
 
         var integerSort = require("../helpers/integerSort");
 
+        _logWriter.write("debug", "Getting private messages between users with Ids '" + requestingUserId + "' and '" + userId + "'...");
+
+        var queryObject = { $and: [{ userIds: [requestingUserId, userId].sort(integerSort.asc) }] };
+
+        if (dateFrom)
+            queryObject.$and.push({ "messages.date": { $gte: dateFrom } });
+        if (dateTo)
+            queryObject.$and.push({ "messages.date": { $lte: dateTo } });
+
         _conversationsRepository.list(
-            { userIds: [requestingUserId, userId].sort(integerSort.asc) }, // Query
+            queryObject, // Query
             { messages: true }, // Projection
             function (err, results) {
                 handleGetMessagesResponse(err, results, next);
