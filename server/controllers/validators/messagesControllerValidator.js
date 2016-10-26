@@ -7,6 +7,11 @@
         var is = require("common/helpers/is");
         var string = require("common/helpers/string");
 
+        app.get("/messages", function (req, res, next) {
+
+            validateDates(req, res, next);
+        });
+
         app.all("/groups/:groupId/messages", function (req, res, next) {
 
             logWriter.write("debug", "Validating input...");
@@ -14,8 +19,8 @@
             if (is.integer(req.params.groupId)) {
 
                 logWriter.write("debug", "Valid path.");
-
-                next();
+                
+                validateDates(req, res, next);
                 return;
             }
 
@@ -47,7 +52,7 @@
 
             logWriter.write("debug", "Valid path.");
 
-            next();
+            validateDates(req, res, next);
         });
 
         app.post("/messages", function (req, res, next) {
@@ -64,6 +69,30 @@
 
             validateMessage(req, res, next);
         });
+
+        var validateDates = function (req, res, next) {
+
+            if (req.query.dateFrom)
+                if (!is.date(req.query.dateFrom)) {
+
+                    logWriter.write("debug", "Invalid input. Returning 422 UnprocessableEntity.")
+
+                    res.status(422).send("DateFrom has to be a valid date.");
+                    return;
+                }
+            if (req.query.dateTo)
+                if (!is.date(req.query.dateTo)) {
+
+                    logWriter.write("debug", "Invalid input. Returning 422 UnprocessableEntity.")
+
+                    res.status(422).send("DateTo has to be a valid date.");
+                    return;
+                }
+
+            logWriter.write("debug", "Valid query.");
+
+            next();
+        }
 
         var validateMessage = function (req, res, next) {
             
