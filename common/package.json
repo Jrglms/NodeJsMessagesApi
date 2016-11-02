@@ -9,6 +9,6 @@
     "url": "https://github.com/Jrglms/NodeJsMessagesApi"
   },
   "dependencies": {
-    "mongodb": "^2.2.11"
+    "googleapis": "^14.1.0"
   }
 }
