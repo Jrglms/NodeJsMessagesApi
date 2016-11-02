@@ -1,28 +1,15 @@
 ﻿(function (appConfig) {
 
-    var _database = require("./data/mongoDatabase");
-    var _url = "mongodb://localhost:27017/MessagesApi";
+    var _datastore = require('./data/datastoreDatabase');
 
-    var _db = null;
-
+    var _databaseConfig = {
+        projectId: "nodejsmessagesapi",
+        keyFilename: "/cloudDatastoreCredentials.json"
+    }
+    
     appConfig.getDatabase = function (next) {
 
-        if (_db) {
-            next(null, _db);
-        }
-        else {
-            _database.connect(_url, function (err, db) {
-                if (err) {
-                    next(err, null);
-                } else {
-                    _db = {
-                        db: db,
-                        conversations: db.collection("conversations")
-                    };
-                    next(null, _db);
-                }
-            });
-        }
+        _datastore.connect(_databaseConfig, next);
     };
 
     appConfig.logWriter = null;
