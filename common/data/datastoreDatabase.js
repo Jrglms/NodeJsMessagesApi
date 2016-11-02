@@ -2,7 +2,7 @@
     
     datastoreDatabase.connect = function (config, next) {
 
-        var db = require('google-cloud')(_databaseConfig).datastore();
+        var db = require('google-cloud')(config).datastore();
 
         next(null, db);
     }

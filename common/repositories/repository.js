@@ -7,23 +7,28 @@
         _db = db;
     }
     
-    repository.list = function (indentifier, next) {
+    repository.list = function (kind, ancestorIdentifier, next) {
 
-        var key = db.key(identifier);
+        var query = _db.createQuery(kind);
 
-        _db.get(key, function (err, entity) {
+        var ancestorKey = _db.key(ancestorIdentifier);
+
+        query.hasAncestor(ancestorKey);
+
+        _db.runQuery(query, function (err, entities) {
+
             if (err) {
                 next(err, null);
             }
             else {
-                next(null, entity.data);
+                next(null, entities);
             }
         });
     };
 
     repository.upsert = function (identifier, entity, next) {
 
-        var key = db.key(identifier);
+        var key = _db.key(identifier);
 
         var entityToSave = {
             key: key,

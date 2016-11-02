@@ -1,6 +1,6 @@
-﻿(function (messagesController) {
+﻿(function (authenticationController) {
 
-    messagesController.init = function (app) {
+    authenticationController.init = function (app) {
 
         var logWriter = require("../appConfig").logWriter;
 

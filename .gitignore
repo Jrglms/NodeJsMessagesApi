@@ -42,3 +42,4 @@ jspm_packages
 *.njsproj
 */typings
 common/cloudDatastoreCredentials.json
+server/cloudDatastoreCredentials.json

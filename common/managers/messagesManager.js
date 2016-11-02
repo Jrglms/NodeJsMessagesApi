@@ -1,7 +1,7 @@
 ﻿(function (messagesManager) {
 
     var _logWriter = require("../appConfig").logWriter;
-    var _conversationsRepository = require("../repositories/conversationsRepository");
+    var _repository = require("../repositories/repository");
     
     var handleAddMessageResponse = function (err, next) {
         if (err) {
@@ -18,27 +18,15 @@
             _logWriter.write("error", "Failed to get messages. Error message:\n" + "\t" + err);
             next(err, null);
         } else {
-            switch (results.length) {
-                case 0:
-                    _logWriter.write("debug", "No collection was found. Returning empty array.");
-                    next(null, []);
-                    break;
-                case 1:
-                    _logWriter.write("debug", "Collection found. Returning the associated messages.");
-                    next(null, results[0].messages);
-                    break;
-                default:
-                    var errorMessage = "More than a collection messages was returned. Only one was expected.";
-                    _logWriter.write("error", errorMessage);
-                    next(errorMessage, null);
-                    break;
-            }
+            _logWriter.write("debug", "Collection found. Returning the associated messages.");
+
+            next(null, results);
         }
     }
 
-    var getProjectionObjectForUpdate = function (message, userId, userIp, date) {
+    var getMessageEntity = function (message, userId, userIp, date) {
 
-        return { $push: { messages: { message: message, userId: userId, userIp: userIp, date: date } } };
+        return { message: message, userId: userId, userIp: userIp, date: date };
     }
 
     var getProjectionObjectForGet = function (message, userId, userIp, date) {
@@ -61,29 +49,30 @@
 
     messagesManager.init = function (db) {
 
-        _conversationsRepository.init(db);
+        _repository.init(db);
     }
 
     messagesManager.addGlobalMessage = function (userId, message, userIp, date, next) {
 
         _logWriter.write("debug", "Adding global message...");
 
-        _conversationsRepository.findOneAndUpdate(
-            { userIds: { $exists: false }, groupId: { $exists: false } }, // Query
-            getProjectionObjectForUpdate(message, userId, userIp, date),
-            getOptionsObject(),
-            function (err) {
-                handleAddMessageResponse(err, next);
-            });
+        var identifier = ['GlobalConversation', 'default', 'Message'];
+
+        var entity = getMessageEntity(message, userId, userIp, date);
+
+        _repository.upsert(identifier, entity, function (err) {
+
+            handleAddMessageResponse(err, next);
+        });
     }
 
     messagesManager.addGroupMessage = function (userId, groupId, message, userIp, date, next) {
 
         _logWriter.write("debug", "Adding a new group message...");
 
-        _conversationsRepository.findOneAndUpdate(
+        _repository.findOneAndUpdate(
             { groupId: groupId }, // Query
-            getProjectionObjectForUpdate(message, userId, userIp, date),
+            getMessageEntity(message, userId, userIp, date),
             getOptionsObject(),
             function (err) {
                 handleAddMessageResponse(err, next);
@@ -96,9 +85,9 @@
 
         var integerSort = require("../helpers/integerSort");
 
-        _conversationsRepository.findOneAndUpdate(
+        _repository.findOneAndUpdate(
             { userIds: [senderUserId, receiverUserId].sort(integerSort.asc) }, // Query
-            getProjectionObjectForUpdate(message, userId, userIp, date),
+            getMessageEntity(message, userId, userIp, date),
             getOptionsObject(),
             function (err) {
                 handleAddMessageResponse(err, next);
@@ -109,16 +98,13 @@
 
         _logWriter.write("debug", "Getting global messages...");
 
-        var queryObject = { $and: [{ userIds: { $exists: false } }, { groupId: { $exists: false } }] };
-
-        addDateFiltersToQueryObject(queryObject, dateFrom, dateTo);
+        var kind = 'Message';
+        var ancestorIdentifier = ['GlobalConversation', 'default'];
         
-        _conversationsRepository.list(
-            queryObject,
-            getProjectionObjectForGet(),
-            function (err, results) {
-                handleGetMessagesResponse(err, results, next);
-            });
+        _repository.list(kind, ancestorIdentifier, function (err, results) {
+
+            handleGetMessagesResponse(err, results, next);
+        });
     };
 
     messagesManager.getGroupMessages = function (groupId, dateFrom, dateTo, next) {
@@ -129,7 +115,7 @@
 
         addDateFiltersToQueryObject(queryObject, dateFrom, dateTo);
 
-        _conversationsRepository.list(
+        _repository.list(
             queryObject,
             getProjectionObjectForGet(),
             function (err, results) {
@@ -147,7 +133,7 @@
 
         addDateFiltersToQueryObject(queryObject, dateFrom, dateTo);
 
-        _conversationsRepository.list(
+        _repository.list(
             queryObject,
             getProjectionObjectForGet(),
             function (err, results) {

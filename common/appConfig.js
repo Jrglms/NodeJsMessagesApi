@@ -4,7 +4,7 @@
 
     var _databaseConfig = {
         projectId: "nodejsmessagesapi",
-        keyFilename: "/cloudDatastoreCredentials.json"
+        keyFilename: "./cloudDatastoreCredentials.json"
     }
     
     appConfig.getDatabase = function (next) {

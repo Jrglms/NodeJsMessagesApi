@@ -12,7 +12,7 @@
         // Initializing the manager per request.
         app.all("*", function (req, res, next) {
 
-            manager.init(res.db);
+            manager.init(res.locals.db);
 
             next();
         })
