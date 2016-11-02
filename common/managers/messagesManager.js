@@ -59,6 +59,11 @@
             queryObject.$and.push({ "messages.date": { $lte: dateTo } });
     }
 
+    messagesManager.init = function (db) {
+
+        _conversationsRepository.init(db);
+    }
+
     messagesManager.addGlobalMessage = function (userId, message, userIp, date, next) {
 
         _logWriter.write("debug", "Adding global message...");
