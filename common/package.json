@@ -9,6 +9,6 @@
     "url": "https://github.com/Jrglms/NodeJsMessagesApi"
   },
   "dependencies": {
-    "googleapis": "^14.1.0"
+    "google-cloud": "^0.43.0"
   }
 }
