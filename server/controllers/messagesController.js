@@ -9,6 +9,14 @@
         var validator = require("./validators/messagesControllerValidator");
         validator.init(app);
 
+        // Initializing the manager per request.
+        app.all("*", function (req, res, next) {
+
+            manager.init(res.db);
+
+            next();
+        })
+
         app.get("/groups/:groupId/messages", function (req, res) {
 
             var groupId = req.params.groupId;
