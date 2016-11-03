@@ -28,25 +28,7 @@
 
         return { message: message, userId: userId, userIp: userIp, date: date };
     }
-
-    var getProjectionObjectForGet = function (message, userId, userIp, date) {
-
-        return { messages: true };
-    }
-
-    var getOptionsObject = function () {
-
-        return { upsert: true }
-    }
-
-    var addDateFiltersToQueryObject = function (queryObject, dateFrom, dateTo) {
-
-        if (dateFrom)
-            queryObject.$and.push({ "messages.date": { $gte: dateFrom } });
-        if (dateTo)
-            queryObject.$and.push({ "messages.date": { $lte: dateTo } });
-    }
-
+    
     messagesManager.init = function (db) {
 
         _repository.init(db);
@@ -70,28 +52,31 @@
 
         _logWriter.write("debug", "Adding a new group message...");
 
-        _repository.findOneAndUpdate(
-            { groupId: groupId }, // Query
-            getMessageEntity(message, userId, userIp, date),
-            getOptionsObject(),
-            function (err) {
-                handleAddMessageResponse(err, next);
-            });
+        var identifier = ['GroupConversation', groupId, 'Message'];
+
+        var entity = getMessageEntity(message, userId, userIp, date);
+
+        _repository.upsert(identifier, entity, function (err) {
+
+            handleAddMessageResponse(err, next);
+        });
     }
 
     messagesManager.addPrivateMessage = function (senderUserId, receiverUserId, message, userIp, date, next) {
 
-        _logWriter.write("debug", "Adding a new private message...");
-
         var integerSort = require("../helpers/integerSort");
 
-        _repository.findOneAndUpdate(
-            { userIds: [senderUserId, receiverUserId].sort(integerSort.asc) }, // Query
-            getMessageEntity(message, userId, userIp, date),
-            getOptionsObject(),
-            function (err) {
-                handleAddMessageResponse(err, next);
-            });
+        _logWriter.write("debug", "Adding a new private message...");
+
+        var userIds = [senderUserId, receiverUserId].sort(integerSort.asc);
+        var identifier = ['PrivateConversation', userIds[0] + '_' + userIds[1], 'Message'];
+
+        var entity = getMessageEntity(message, receiverUserId, userIp, date);
+
+        _repository.upsert(identifier, entity, function (err) {
+
+            handleAddMessageResponse(err, next);
+        });
     }
 
     messagesManager.getGlobalMessages = function (dateFrom, dateTo, next) {
@@ -111,16 +96,13 @@
 
         _logWriter.write("debug", "Getting group messages for group with Id '" + groupId + "'...");
 
-        var queryObject = { $and: [{ groupId: groupId }] };
+        var kind = 'Message';
+        var ancestorIdentifier = ['GroupConversation', groupId];
 
-        addDateFiltersToQueryObject(queryObject, dateFrom, dateTo);
+        _repository.list(kind, ancestorIdentifier, function (err, results) {
 
-        _repository.list(
-            queryObject,
-            getProjectionObjectForGet(),
-            function (err, results) {
-                handleGetMessagesResponse(err, results, next);
-            });
+            handleGetMessagesResponse(err, results, next);
+        });
     };
 
     messagesManager.getPrivateMessages = function (requestingUserId, userId, dateFrom, dateTo, next) {
@@ -129,16 +111,14 @@
 
         _logWriter.write("debug", "Getting private messages between users with Ids '" + requestingUserId + "' and '" + userId + "'...");
 
-        var queryObject = { $and: [{ userIds: [requestingUserId, userId].sort(integerSort.asc) }] };
+        var kind = 'Message';
+        var userIds = [requestingUserId, userId].sort(integerSort.asc);
+        var ancestorIdentifier = ['PrivateConversation', userIds[0] + '_' + userIds[1]];
 
-        addDateFiltersToQueryObject(queryObject, dateFrom, dateTo);
+        _repository.list(kind, ancestorIdentifier, function (err, results) {
 
-        _repository.list(
-            queryObject,
-            getProjectionObjectForGet(),
-            function (err, results) {
-                handleGetMessagesResponse(err, results, next);
-            });
+            handleGetMessagesResponse(err, results, next);
+        });
     };
 
 })(module.exports)
