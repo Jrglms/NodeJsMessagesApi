@@ -28,7 +28,20 @@
 
         return { message: message, userId: userId, userIp: userIp, date: date };
     }
-    
+
+    var getDateFilters = function (dateFrom, dateTo) {
+
+        var filters = [];
+        if (dateFrom) {
+            filters.push(_repository.getFilter('date', '>=', dateFrom));
+        }
+        if (dateTo) {
+            filters.push(_repository.getFilter('date', '<=', dateTo));
+        }
+
+        return filters;
+    }
+
     messagesManager.init = function (db) {
 
         _repository.init(db);
@@ -85,14 +98,7 @@
 
         var kind = 'Message';
         var ancestorIdentifier = ['GlobalConversation', 'default'];
-
-        var filters = [];
-        if (dateFrom) {
-            filters.push(_repository.getFilter('date', '>=', dateFrom));
-        }
-        if (dateTo) {
-            filters.push(_repository.getFilter('date', '<=', dateTo));
-        }
+        var filters = getDateFilters(dateFrom, dateTo);
 
         _repository.list(kind, ancestorIdentifier, filters, function (err, results) {
 
@@ -106,8 +112,9 @@
 
         var kind = 'Message';
         var ancestorIdentifier = ['GroupConversation', groupId];
+        var filters = getDateFilters(dateFrom, dateTo);
 
-        _repository.list(kind, ancestorIdentifier, null, function (err, results) {
+        _repository.list(kind, ancestorIdentifier, filters, function (err, results) {
 
             handleGetMessagesResponse(err, results, next);
         });
@@ -122,8 +129,9 @@
         var kind = 'Message';
         var userIds = [requestingUserId, userId].sort(integerSort.asc);
         var ancestorIdentifier = ['PrivateConversation', userIds[0] + '_' + userIds[1]];
+        var filters = getDateFilters(dateFrom, dateTo);
 
-        _repository.list(kind, ancestorIdentifier, null, function (err, results) {
+        _repository.list(kind, ancestorIdentifier, filters, function (err, results) {
 
             handleGetMessagesResponse(err, results, next);
         });
