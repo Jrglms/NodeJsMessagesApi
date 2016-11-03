@@ -6,14 +6,29 @@
 
         _db = db;
     }
-    
-    repository.list = function (kind, ancestorIdentifier, next) {
+
+    repository.getFilter = function (name, comparison, value) {
+
+        return {
+            name: name,
+            comparison: comparison,
+            value: value
+        };
+    }
+
+    repository.list = function (kind, ancestorIdentifier, filters, next) {
 
         var query = _db.createQuery(kind);
 
         var ancestorKey = _db.key(ancestorIdentifier);
 
         query.hasAncestor(ancestorKey);
+
+        if (filters) {
+            for (filter of filters) {
+                query.filter(filter.name, filter.comparison, filter.value);
+            }
+        }
 
         _db.runQuery(query, function (err, entities) {
 

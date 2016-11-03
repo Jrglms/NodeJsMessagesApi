@@ -85,8 +85,16 @@
 
         var kind = 'Message';
         var ancestorIdentifier = ['GlobalConversation', 'default'];
-        
-        _repository.list(kind, ancestorIdentifier, function (err, results) {
+
+        var filters = [];
+        if (dateFrom) {
+            filters.push(_repository.getFilter('date', '>=', dateFrom));
+        }
+        if (dateTo) {
+            filters.push(_repository.getFilter('date', '<=', dateTo));
+        }
+
+        _repository.list(kind, ancestorIdentifier, filters, function (err, results) {
 
             handleGetMessagesResponse(err, results, next);
         });
@@ -99,7 +107,7 @@
         var kind = 'Message';
         var ancestorIdentifier = ['GroupConversation', groupId];
 
-        _repository.list(kind, ancestorIdentifier, function (err, results) {
+        _repository.list(kind, ancestorIdentifier, null, function (err, results) {
 
             handleGetMessagesResponse(err, results, next);
         });
@@ -115,7 +123,7 @@
         var userIds = [requestingUserId, userId].sort(integerSort.asc);
         var ancestorIdentifier = ['PrivateConversation', userIds[0] + '_' + userIds[1]];
 
-        _repository.list(kind, ancestorIdentifier, function (err, results) {
+        _repository.list(kind, ancestorIdentifier, null, function (err, results) {
 
             handleGetMessagesResponse(err, results, next);
         });
