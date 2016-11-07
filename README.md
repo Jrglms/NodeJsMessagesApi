@@ -72,4 +72,4 @@ If required, include `dateTo` and/or `dateFrom` in the query string to filter th
 # Other notes
 - This project has been used to learn how to build an API with Node.js. _Shawn Wildermuth_'s Pluralsight course _Node.js for .NET Developers_ has been followed to understand and implement the basic functionality of the project.
 - There is a branch prepared to talk with Google Cloud Datastore instead of MongoDb. To use it, just download the branch and the credentials file of a datastore project. Rename the file as `cloudDatastoreCredentials.json` and add it to the server folder. After that, follow the previous instructions.
-  - When retrieving the messages an index will be needed. You need to upload it to the Datastore. For that, I downloaded gcloud tools for windows and run `gcloud preview datastore create-indexes .\index.yaml`.
+  - When retrieving the messages an index will be needed. You need to upload it to the Datastore. For that, I downloaded gcloud tools for windows and run `gcloud preview datastore create-indexes .\datastoreIndexes\index.yaml`.
