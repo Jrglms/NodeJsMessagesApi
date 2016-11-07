@@ -30,6 +30,9 @@
             }
         }
 
+        // Last minute change. This should be added as part of the Get method in the managers, but I had no time.
+        query.order('date');
+
         _db.runQuery(query, function (err, entities) {
 
             if (err) {
