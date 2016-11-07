@@ -70,4 +70,5 @@ Use `GET` to one of the urls provided before to get the collection of messages.
 If required, include `dateTo` and/or `dateFrom` in the query string to filter the messages by a range of time. Make sure the date can be understood by javascript.
 
 # Other notes
-This project has been used to learn how to build an API with Node.js. _Shawn Wildermuth_'s Pluralsight course _Node.js for .NET Developers_ has been followed to understand and implement the basic functionality of the project.
+- This project has been used to learn how to build an API with Node.js. _Shawn Wildermuth_'s Pluralsight course _Node.js for .NET Developers_ has been followed to understand and implement the basic functionality of the project.
+- There is a branch prepared to talk with Google Cloud Datastore instead of MongoDb. To use it, just download the branch and the credentials file of a datastore project. Rename the file as `cloudDatastoreCredentials.json` and add it to the server folder. After that, follow the previous instructions.
